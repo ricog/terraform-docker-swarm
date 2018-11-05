@@ -7,7 +7,7 @@ resource "digitalocean_droplet" "first-manager" {
   private_networking = "true"
 
   provisioner "remote-exec" {
-    script = "scripts/wait_for_instance.sh"
+    script = "${path.module}/scripts/wait_for_instance.sh"
   }
   provisioner "remote-exec" {
     inline = [
@@ -21,12 +21,12 @@ resource "digitalocean_droplet" "first-manager" {
     ]
   }
   provisioner "local-exec" {
-    command = "sh ./add-first-manager.sh ${self.name} ${self.ipv4_address} ${self.ipv4_address_private}"
+    command = "sh ${path.module}/add-first-manager.sh ${self.name} ${self.ipv4_address} ${self.ipv4_address_private}"
   }
 
   provisioner "local-exec" {
     when = "destroy"
-    command = "sh ./remove-first-manager.sh ${self.name} ${self.ipv4_address} ${self.ipv4_address_private}"
+    command = "sh ${path.module}/remove-first-manager.sh ${self.name} ${self.ipv4_address} ${self.ipv4_address_private}"
     on_failure = "continue"
   }
 }
@@ -42,7 +42,7 @@ resource "digitalocean_droplet" "managers" {
   depends_on = ["digitalocean_droplet.first-manager"]
 
   provisioner "remote-exec" {
-    script = "scripts/wait_for_instance.sh"
+    script = "${path.module}/scripts/wait_for_instance.sh"
   }
   provisioner "remote-exec" {
     inline = [
@@ -54,12 +54,12 @@ resource "digitalocean_droplet" "managers" {
     ]
   }
   provisioner "local-exec" {
-    command = "sh ./add-manager.sh ${self.name} ${self.ipv4_address} ${self.ipv4_address_private}"
+    command = "sh ${path.module}/add-manager.sh ${self.name} ${self.ipv4_address} ${self.ipv4_address_private}"
   }
 
   provisioner "local-exec" {
     when = "destroy"
-    command = "sh ./remove-manager.sh ${self.name} ${self.ipv4_address} ${self.ipv4_address_private}"
+    command = "sh ${path.module}/remove-manager.sh ${self.name} ${self.ipv4_address} ${self.ipv4_address_private}"
     on_failure = "continue"
   }
 }
@@ -75,7 +75,7 @@ resource "digitalocean_droplet" "workers" {
   depends_on = ["digitalocean_droplet.first-manager"]
 
   provisioner "remote-exec" {
-    script = "scripts/wait_for_instance.sh"
+    script = "${path.module}/scripts/wait_for_instance.sh"
   }
   provisioner "remote-exec" {
     inline = [
@@ -87,12 +87,12 @@ resource "digitalocean_droplet" "workers" {
     ]
   }
   provisioner "local-exec" {
-    command = "sh ./add-worker.sh ${self.name} ${self.ipv4_address} ${self.ipv4_address_private}"
+    command = "sh ${path.module}/add-worker.sh ${self.name} ${self.ipv4_address} ${self.ipv4_address_private}"
   }
 
   provisioner "local-exec" {
     when = "destroy"
-    command = "sh ./remove-worker.sh ${self.name} ${self.ipv4_address} ${self.ipv4_address_private}"
+    command = "sh ${path.module}/remove-worker.sh ${self.name} ${self.ipv4_address} ${self.ipv4_address_private}"
     on_failure = "continue"
   }
 }
